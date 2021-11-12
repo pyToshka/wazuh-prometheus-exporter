@@ -103,9 +103,14 @@ class WazuhCollector(object):
         )
         for version in agents["last_registered_agent"]:
             for key, value in version["os"].items():
+                node_name = version["node_name"]
+                node_value = f'{version["node_name"]}-{key}'
+                prom_node_name_format = node_name.replace("-", "_")
+                prom_node_value_format = node_value.replace("-", "_")
+
                 metric.add_metric(
-                    labels=version["node_name"],
-                    value={f'{version["node_name"]}-{key}': f"{value}"},
+                    labels=prom_node_name_format,
+                    value={prom_node_value_format: f"{value}"},
                 )
         yield metric
         metric = InfoMetricFamily("nodes_healthcheck", "Wazuh nodes healthcheck")
