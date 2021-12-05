@@ -24,7 +24,7 @@ from base64 import b64encode
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-class Wazuh(object):
+class Wazuh:
     def __init__(self, protocol, host, port, login_endpoint, user, password):
         self.protocol = protocol
         self.host = host
