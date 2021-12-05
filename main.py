@@ -18,6 +18,7 @@
 #  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 #  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import os
+import sys
 
 import time
 
@@ -40,7 +41,7 @@ try:
         raise KeyError
 except KeyError as error:
     print("Please check system variables")
-    exit(2)
+    sys.exit(2)
 
 login_endpoint = "security/user/authenticate"
 
