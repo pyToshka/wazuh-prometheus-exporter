@@ -46,7 +46,7 @@ except KeyError as error:
 login_endpoint = "security/user/authenticate"
 
 
-class WazuhCollector(object):
+class WazuhCollector:
     def __init__(self):
         pass
 
