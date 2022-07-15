@@ -60,7 +60,8 @@ class WazuhCollector:
     def __init__(self):
         pass
 
-    def collect(self):
+    @staticmethod
+    def collect():
         wazuh_connection = wazuh.Wazuh(
             protocol=protocol,
             host=host,
