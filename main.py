@@ -58,7 +58,7 @@ login_endpoint = "security/user/authenticate"
 
 class WazuhCollector:
     def __init__(self):
-        pass
+        raise NotImplementedError()
 
     @staticmethod
     def collect():
