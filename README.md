@@ -4,12 +4,14 @@ Simple prometheus exporter for Wazuh server
 
 ## System environments
 
-| Name                    | Description                                                  |
-| ----------------------- | ------------------------------------------------------------ |
-| WAZUH_API_HOST          | Wazuh API host e.g `127.0.0.1` or `wazuh`         |
-| WAZUH_API_PORT          | Wazuh API port e.g `55000` |
-| WAZUH_API_USERNAME      | Wazuh API user for authorization|
-| WAZUH_API_PASSWORD      | Wazuh API user password for authorization|
+| Name                  | Description                                           |
+|-----------------------|-------------------------------------------------------|
+| WAZUH_API_HOST        | Wazuh API host e.g `127.0.0.1` or `wazuh`             |
+| WAZUH_API_PORT        | Wazuh API port e.g `55000`                            |
+| WAZUH_API_USERNAME    | Wazuh API user for authorization                      |
+| WAZUH_API_PASSWORD    | Wazuh API user password for authorization             |
+| EXPORTER_PORT         | Exporter listen port, default 5000                    |
+| EXPORTER_LOG_LEVEL    | Exporter log level, default INFO, for debug use DEBUG |
 
 ## Deployment
 
