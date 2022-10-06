@@ -222,9 +222,9 @@ class WazuhCollector:
                 labels={"manager_stats_remote": "discarded_count"},
             )
             metric.add_sample(
-                "msg_sent",
-                value=remote_state["msg_sent"],
-                labels={"manager_stats_remote": "msg_sent"},
+                "queued_msgs",
+                value=remote_state["queued_msgs"],
+                labels={"manager_stats_remote": "queued_msgs"},
             )
             metric.add_sample(
                 "recv_bytes",
