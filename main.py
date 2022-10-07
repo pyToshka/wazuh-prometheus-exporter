@@ -242,7 +242,7 @@ class WazuhCollector:
             metric.add_metric(
                 labels=f'wazuh_last_logs_{log["tag"]}',
                 value={
-                    f'{log["tag"].replace("-", "_")}_{log["level"]}': f'{log["description"].strip()}'
+                    f'{log["tag"].replace("-", "_").replace(":", "_")}_{log["level"]}': f'{log["description"].strip()}'
                 },
             )
         yield metric
