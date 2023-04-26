@@ -19,6 +19,7 @@
 #  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import os
 import sys
+import logging
 
 import time
 
@@ -120,16 +121,24 @@ class WazuhCollector:
             "last_registered_agent", "Wazuh last registered agent"
         )
         for version in agents["last_registered_agent"]:
-            for key, value in version["os"].items():
-                node_name = version["node_name"]
-                node_value = f'{version["node_name"]}-{key}'
-                prom_node_name_format = node_name.replace("-", "_")
-                prom_node_value_format = node_value.replace("-", "_")
-
-                metric.add_metric(
-                    labels=prom_node_name_format,
-                    value={prom_node_value_format: f"{value}"},
+            if version["status"] == "never_connected":
+                logging.warning(
+                    f'Last Wazuh agent with name {version["name"]} has status {version["status"]},'
+                    f"last_registered_agent metric has been skipped please check agent."
+                    f"Full agent trace {version}"
                 )
+                pass
+            else:
+                for key, value in version["os"].items():
+                    node_name = version["node_name"]
+                    node_value = f'{version["node_name"]}-{key}'
+                    prom_node_name_format = node_name.replace("-", "_")
+                    prom_node_value_format = node_value.replace("-", "_")
+
+                    metric.add_metric(
+                        labels=prom_node_name_format,
+                        value={prom_node_value_format: f"{value}"},
+                    )
         yield metric
         metric = InfoMetricFamily(
             "manager_stats_hourly",
@@ -149,12 +158,15 @@ class WazuhCollector:
         yield metric
         metric = InfoMetricFamily("nodes_healthcheck", "Wazuh nodes healthcheck")
         nodes = wazuh_connection.wazuh_get_nodes_healtchecks(auth)
-        for node in nodes:
-            for key, value in node["info"].items():
-                metric.add_metric(
-                    labels=node["info"]["name"], value={f"{key}": f"{value}"}
-                )
-        yield metric
+        if nodes is None:
+            pass
+        else:
+            for node in nodes:
+                for key, value in node["info"].items():
+                    metric.add_metric(
+                        labels=node["info"]["name"], value={f"{key}": f"{value}"}
+                    )
+            yield metric
         metric = InfoMetricFamily("wazuh_api", "Wazuh API information")
         info = wazuh_connection.wazuh_api_info(auth)
         for key, value in info.items():
