@@ -247,7 +247,13 @@ class Wazuh:
             logging.warning(
                 f"Got response http code {response.status_code}, response body {response.json()['detail']}"
             )
-        return response.json()["data"]["affected_items"]
+        if response.status_code != 200:
+            logging.warning(
+                f"Got response http code {response.status_code}, response body {response.json()['detail']}"
+            )
+            return None
+        else:
+            return response.json()["data"]["affected_items"]
 
     # skipcq: PTC-W6001
     def wazuh_get_last_scan_syscheck(self, requests_headers, agent_id):
