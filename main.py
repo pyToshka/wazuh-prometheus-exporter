@@ -90,23 +90,23 @@ class WazuhCollector:
         metric = Metric("wazuh_agent_status", "Total Wazuh agents by status", "summary")
 
         metric.add_sample(
-            "wazuh_active_agents", value=agents["agent_status"]["active"], labels={}
+            "wazuh_active_agents", value=agents["agent_status"]["connection"]["active"], labels={}
         )
         metric.add_sample(
             "wazuh_disconnected_agents",
-            value=agents["agent_status"]["disconnected"],
+            value=agents["agent_status"]["connection"]["disconnected"],
             labels={},
         )
         metric.add_sample(
             "wazuh_never_connected_agents",
-            value=agents["agent_status"]["never_connected"],
+            value=agents["agent_status"]["connection"]["never_connected"],
             labels={},
         )
         metric.add_sample(
-            "wazuh_pending_agents", value=agents["agent_status"]["pending"], labels={}
+            "wazuh_pending_agents", value=agents["agent_status"]["connection"]["pending"], labels={}
         )
         metric.add_sample(
-            "wazuh_total_agents", value=agents["agent_status"]["total"], labels={}
+            "wazuh_total_agents", value=agents["agent_status"]["connection"]["total"], labels={}
         )
         yield metric
         metric = InfoMetricFamily("wazuh_agent_version", "Wazuh agent versions")
