@@ -1,4 +1,4 @@
 urllib3==1.26.10
 prometheus_client==0.14.1
-requests==2.28.1
+requests==2.31.0
 json-logging
