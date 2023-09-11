@@ -116,7 +116,7 @@ class WazuhCollector:
             )
         # Legacy Wazuh support (< v4.4)
         else:
-             metric.add_sample(
+            metric.add_sample(
                 "wazuh_active_agents",
                 value=agents["agent_status"]["active"],
                 labels={}
