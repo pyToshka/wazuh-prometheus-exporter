@@ -91,54 +91,36 @@ class WazuhCollector:
 
         # Wazuh >= v4.4
         if "connection" in agents["agent_status"]:
-            metric.add_sample(
-                "wazuh_active_agents",
-                value=agents["agent_status"]["connection"]["active"],
-                labels={}
-            )
-            metric.add_sample(
-                "wazuh_disconnected_agents",
-                value=agents["agent_status"]["connection"]["disconnected"],
-                labels={},
-            )
-            metric.add_sample(
-                "wazuh_never_connected_agents",
-                value=agents["agent_status"]["connection"]["never_connected"],
-                labels={},
-            )
-            metric.add_sample(
-                "wazuh_pending_agents", value=agents["agent_status"]["connection"]["pending"],
-                labels={}
-            )
-            metric.add_sample(
-                "wazuh_total_agents", value=agents["agent_status"]["connection"]["total"],
-                labels={}
-            )
+            agents_path = agents["agent_status"]["connection"]
         # Legacy Wazuh support (< v4.4)
         else:
-            metric.add_sample(
-                "wazuh_active_agents",
-                value=agents["agent_status"]["active"],
-                labels={}
-            )
-            metric.add_sample(
-                "wazuh_disconnected_agents",
-                value=agents["agent_status"]["disconnected"],
-                labels={},
-            )
-            metric.add_sample(
-                "wazuh_never_connected_agents",
-                value=agents["agent_status"]["never_connected"],
-                labels={},
-            )
-            metric.add_sample(
-                "wazuh_pending_agents", value=agents["agent_status"]["pending"],
-                labels={}
-            )
-            metric.add_sample(
-                "wazuh_total_agents", value=agents["agent_status"]["total"],
-                labels={}
-            )
+            agents_path = agents["agent_status"]
+        
+        metric.add_sample(
+            "wazuh_active_agents",
+            value=agents_path["active"],                
+            labels={}
+        )
+        metric.add_sample(
+           "wazuh_disconnected_agents",
+            value=agents_path["disconnected"],
+            labels={},
+        )
+        metric.add_sample(
+            "wazuh_never_connected_agents",
+            value=agents_path["never_connected"],
+            labels={},
+        )
+        metric.add_sample(
+            "wazuh_pending_agents",
+            value=agents_path["pending"],
+            labels={}
+        )
+        metric.add_sample(
+            "wazuh_total_agents",
+            value=agents_path["total"],
+            labels={}
+        )
         yield metric
         metric = InfoMetricFamily("wazuh_agent_version", "Wazuh agent versions")
         for version in agents["agent_version"]:
