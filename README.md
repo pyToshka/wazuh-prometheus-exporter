@@ -6,31 +6,26 @@ Simple prometheus exporter for Wazuh server
 
 | Name                  | Description                                           |
 |-----------------------|-------------------------------------------------------|
-| WAZUH_API_HOST        | Wazuh API host e.g `127.0.0.1` or `wazuh`             |
+| WAZUH_API_HOST        | Wazuh API host IP address or hostname                 |
 | WAZUH_API_PORT        | Wazuh API port e.g `55000`                            |
 | WAZUH_API_USERNAME    | Wazuh API user for authorization                      |
 | WAZUH_API_PASSWORD    | Wazuh API user password for authorization             |
 | EXPORTER_PORT         | Exporter listen port, default 5000                    |
-| EXPORTER_LOG_LEVEL    | Exporter log level, default INFO, for debug use DEBUG |
+
 
 ## Deployment
 
 The solution can be run as docker container or inside Kubernetes
 
-Building docker container
+Building docker container (See Makefile for build details and other options)
 
 ```shell
-docker build . -t wazuh-exporter:latest
+make build
 
 ```
 
-or You can pull the existing image from DockerHub
 
-```shell
-docker pull kennyopennix/wazuh-exporter:latest
-```
-
-Example of Kubernetes deployment
+Example of a simple Kubernetes deployment
 
 ```shell
 cd deployment
