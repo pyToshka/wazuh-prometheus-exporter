@@ -114,7 +114,7 @@ class Wazuh:
             headers=requests_headers,
             verify=False,  # currently not verifying SSL cert
         )
-        if response.status_code != 200:
+        if response.status_code != 200 and "Stats file does not exist" not in response.json()['detail]']:
             logging.warning(
                 f"Got response http code {response.status_code}, response body {response.json()['detail']}"
             )

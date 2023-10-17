@@ -115,11 +115,11 @@ class WazuhCollector:
         # Push metrics for events and alerts stats
         for stats in manager_stats:
             event_metric = GaugeMetricFamily(
-                "event_counts_last_hour", 
+                "wazuh_event_counts_last_hour", 
                 "Count of last hour system events and alerts", 
                 labels=["event_type"])
             alert_metric = GaugeMetricFamily(
-                "alert_counts_by_level_last_hour", 
+                "wazuh_alert_counts_by_level_last_hour", 
                 "Count of last hour alerts by level and sigid", 
                 labels=["sigid", "level"])
             if stats['hour'] == len(stats)-1:
@@ -143,9 +143,9 @@ class WazuhCollector:
 
         # Push metrics for Manager Daemon statuses (1.0 for up, 0.0 for down)
         metric = GaugeMetricFamily(
-            "manager_daemons_status", 
+            "wazuh_manager_daemons_status", 
             "status of daemons running on manager", 
-            labels=["daemon", "state"])
+            labels=["daemon"])
         for daemon, status in daemon_status.items():
             if status == "running":
                 value=1.0
@@ -153,7 +153,7 @@ class WazuhCollector:
                 value=0.0
             metric.add_metric(
                 value=str(value),
-                labels=[daemon, status]
+                labels=[daemon]
             )
         yield metric
 
@@ -161,15 +161,16 @@ class WazuhCollector:
         metric = GaugeMetricFamily(
             "wazuh_manager_status",
             "Return whether the Wazuh manager is is healthy",
-            labels=["status"])
+        )
         for validate in validate_configuration:
             if f'{validate["status"]}' == "OK":
                 value = 1.0
             else:
                 value = 0.0
             metric.add_metric(
-                labels=[f'{validate["status"]}'],
-                value=value)
+                value=value,
+                labels={}
+            )
         yield metric
 
         # Produce metrics for daemon stats
@@ -184,7 +185,7 @@ class WazuhCollector:
             # Note, omitted queue size stats as they appear impertenint, should be added if releasing generally, or if neeeded later.  See output of /manager/daemons/stats API
             if name == "wazuh-remoted":
                 metric = GaugeMetricFamily(
-                    "manager_daemon_stats_remoted",
+                    "wazuh_manager_daemon_stats_remoted",
                     "Statistics for remoted daemon on manager",
                     labels=["remoted_metric"]
                 )
@@ -212,7 +213,7 @@ class WazuhCollector:
             # Analysisd stat collection
             elif name == "wazuh-analysisd":
                 metric = GaugeMetricFamily(
-                "manager_daemon_stats_analysisd",
+                "wazuh_manager_daemon_stats_analysisd",
                 "Statistics for analysisd daemon on manager",
                 labels=["analysisd_metric"]
                 )
@@ -474,7 +475,7 @@ class WazuhCollector:
                     )
             elif name == "wazuh-db":
                 metric = GaugeMetricFamily(
-                "manager_daemon_stats_db",
+                "wazuh_manager_daemon_stats_db",
                 "Statistics for manager db",
                 labels=["db_metric"]
                 )
@@ -1057,7 +1058,7 @@ class WazuhCollector:
             else:
                 unmonitored_daemons += 1
                 metric = GaugeMetricFamily(
-                    "unmonitored_wazuh_daemons",
+                    "wazuh_unmonitored_wazuh_daemons",
                     "Daemons detected on manager without current metrics",
                     labels=["daemon"]
                 )
