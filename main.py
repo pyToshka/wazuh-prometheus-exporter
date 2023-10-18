@@ -159,17 +159,18 @@ class WazuhCollector:
 
         # Produce metrics for daemon status on manager
         metric = GaugeMetricFamily(
-            "wazuh_manager_status",
-            "Return whether the Wazuh manager is is healthy",
+            "wazuh_cluster_status",
+            "Return whether the Wazuh cluster is healthy",
+            labels=["node"]
         )
-        for validate in validate_configuration:
-            if f'{validate["status"]}' == "OK":
+        for node in validate_configuration:
+            if node['status'] == "OK":
                 value = 1.0
             else:
                 value = 0.0
             metric.add_metric(
                 value=value,
-                labels={}
+                labels=[f"{node['name']}"]
             )
         yield metric
 

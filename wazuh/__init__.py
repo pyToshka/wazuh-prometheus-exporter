@@ -98,7 +98,7 @@ class Wazuh:
 
     def wazuh_validate_configuration(self, requests_headers):
         response = requests.get(
-            f"{self.url}/manager/configuration/validation",
+            f"{self.url}/cluster/configuration/validation",
             headers=requests_headers,
             verify=False,  # currently not verifying SSL cert
         )
@@ -114,7 +114,7 @@ class Wazuh:
             headers=requests_headers,
             verify=False,  # currently not verifying SSL cert
         )
-        if response.status_code != 200 and "Stats file does not exist" not in response.json()['detail]']:
+        if response.status_code != 200:
             logging.warning(
                 f"Got response http code {response.status_code}, response body {response.json()['detail']}"
             )
@@ -188,7 +188,7 @@ class Wazuh:
                 f"Got response http code {response.status_code}, response body {response.json()['detail']}"
             )
         return response.json()["data"]
-
+    
     # Not currently presenting as metrics, but maybe useful in the future
     # def wazuh_get_nodes_healthchecks(self, requests_headers):
     #     response = requests.get(
