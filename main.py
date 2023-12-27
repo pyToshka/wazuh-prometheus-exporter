@@ -88,25 +88,25 @@ class WazuhCollector:
             metric.add_sample("wazuh_agents_group", value=group["count"], labels={})
         yield metric
         metric = Metric("wazuh_agent_status", "Total Wazuh agents by status", "summary")
-
+        agent_status = agents["agent_status"]["connection"]
         metric.add_sample(
-            "wazuh_active_agents", value=agents["agent_status"]["active"], labels={}
+            "wazuh_active_agents", value=agent_status["active"], labels={}
         )
         metric.add_sample(
             "wazuh_disconnected_agents",
-            value=agents["agent_status"]["disconnected"],
+            value=agent_status["disconnected"],
             labels={},
         )
         metric.add_sample(
             "wazuh_never_connected_agents",
-            value=agents["agent_status"]["never_connected"],
+            value=agent_status["never_connected"],
             labels={},
         )
         metric.add_sample(
-            "wazuh_pending_agents", value=agents["agent_status"]["pending"], labels={}
+            "wazuh_pending_agents", value=agent_status["pending"], labels={}
         )
         metric.add_sample(
-            "wazuh_total_agents", value=agents["agent_status"]["total"], labels={}
+            "wazuh_total_agents", value=agent_status["total"], labels={}
         )
         yield metric
         metric = InfoMetricFamily("wazuh_agent_version", "Wazuh agent versions")
@@ -234,19 +234,9 @@ class WazuhCollector:
                 labels={"manager_stats_remote": "discarded_count"},
             )
             metric.add_sample(
-                "queued_msgs",
-                value=remote_state["queued_msgs"],
-                labels={"manager_stats_remote": "queued_msgs"},
-            )
-            metric.add_sample(
                 "recv_bytes",
                 value=remote_state["recv_bytes"],
                 labels={"manager_stats_remote": "recv_bytes"},
-            )
-            metric.add_sample(
-                "dequeued_after_close",
-                value=remote_state["dequeued_after_close"],
-                labels={"manager_stats_remote": "dequeued_after_close"},
             )
         yield metric
         metric = InfoMetricFamily("last_logs", "The last 2000 wazuh log entries")
@@ -274,18 +264,8 @@ class WazuhCollector:
             )
             metric.add_sample(
                 "analysisd_stats",
-                value=analysisd_stat["syscheck_edps"],
-                labels={"analysisd_stats": "syscheck_edps"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
                 value=analysisd_stat["syscollector_events_decoded"],
                 labels={"analysisd_stats": "syscollector_events_decoded"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
-                value=analysisd_stat["syscollector_edps"],
-                labels={"analysisd_stats": "syscollector_edps"},
             )
             metric.add_sample(
                 "analysisd_stats",
@@ -294,28 +274,8 @@ class WazuhCollector:
             )
             metric.add_sample(
                 "analysisd_stats",
-                value=analysisd_stat["rootcheck_edps"],
-                labels={"analysisd_stats": "rootcheck_edps"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
                 value=analysisd_stat["sca_events_decoded"],
                 labels={"analysisd_stats": "sca_events_decoded"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
-                value=analysisd_stat["sca_edps"],
-                labels={"analysisd_stats": "sca_edps"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
-                value=analysisd_stat["hostinfo_events_decoded"],
-                labels={"analysisd_stats": "hostinfo_events_decoded"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
-                value=analysisd_stat["hostinfo_edps"],
-                labels={"analysisd_stats": "hostinfo_edps"},
             )
             metric.add_sample(
                 "analysisd_stats",
@@ -324,18 +284,8 @@ class WazuhCollector:
             )
             metric.add_sample(
                 "analysisd_stats",
-                value=analysisd_stat["winevt_edps"],
-                labels={"analysisd_stats": "winevt_edps"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
                 value=analysisd_stat["dbsync_messages_dispatched"],
                 labels={"analysisd_stats": "dbsync_messages_dispatched"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
-                value=analysisd_stat["dbsync_mdps"],
-                labels={"analysisd_stats": "dbsync_mdps"},
             )
             metric.add_sample(
                 "analysisd_stats",
@@ -344,18 +294,8 @@ class WazuhCollector:
             )
             metric.add_sample(
                 "analysisd_stats",
-                value=analysisd_stat["other_events_edps"],
-                labels={"analysisd_stats": "other_events_edps"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
                 value=analysisd_stat["events_processed"],
                 labels={"analysisd_stats": "events_processed"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
-                value=analysisd_stat["events_edps"],
-                labels={"analysisd_stats": "events_edps"},
             )
             metric.add_sample(
                 "analysisd_stats",
@@ -451,16 +391,6 @@ class WazuhCollector:
                 "analysisd_stats",
                 value=analysisd_stat["dbsync_queue_size"],
                 labels={"analysisd_stats": "dbsync_queue_size"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
-                value=analysisd_stat["upgrade_queue_usage"],
-                labels={"analysisd_stats": "upgrade_queue_usage"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
-                value=analysisd_stat["upgrade_queue_size"],
-                labels={"analysisd_stats": "upgrade_queue_size"},
             )
             metric.add_sample(
                 "analysisd_stats",
