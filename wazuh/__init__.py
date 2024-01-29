@@ -237,7 +237,6 @@ class Wazuh:
 
     # skipcq: PTC-W6001
     def wazuh_get_nodes_healtchecks(self, requests_headers):
-
         response = requests.get(
             f"{self.url}/cluster/healthcheck",
             headers=requests_headers,
@@ -257,7 +256,6 @@ class Wazuh:
 
     # skipcq: PTC-W6001
     def wazuh_get_last_scan_syscheck(self, requests_headers, agent_id):
-
         response = requests.get(
             f"{self.url}/syscheck/{agent_id}",
             headers=requests_headers,
