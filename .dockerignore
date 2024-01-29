@@ -19,5 +19,5 @@ docs/
 docker-compose.yaml
 Dockerfile
 venv
-tests
 *.json
+tests/*

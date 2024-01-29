@@ -1,0 +1,10 @@
+
+# config file version
+apiVersion: 1
+
+# Provisioning Grafana
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090

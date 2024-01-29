@@ -1,22 +1,4 @@
 #!/usr/bin/env python
-#  Copyright (c) 2021.  Yuriy Medvedev
-#  All rights reserved.
-#  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
-#  following conditions are met: 1. Redistributions of source code must retain the above copyright notice,
-#  this list of conditions and the following disclaimer. 2. Redistributions in binary form must reproduce the above
-#  copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials
-#  provided with the distribution. 3. All advertising materials mentioning features or use of this software must
-#  display the following acknowledgement: This product includes software developed by the Yuriy Medvedev. 4.Neither
-#  the name of the Yuriy Medvedev nor the names of its contributors may be used to endorse or promote products derived
-#  from this software without specific prior written permission.
-#
-#  THIS SOFTWARE IS PROVIDED BY Yuriy Medvedev ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
-#  BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-#  IN NO EVENT SHALL Yuriy Medvedev BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
-#  OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-#  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-#  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
-#  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import os
 import sys
 import logging
@@ -62,6 +44,7 @@ class WazuhCollector:
         logger.info("Start collector")
 
     @staticmethod
+    # skipcq: PY-R1000
     def collect():
         wazuh_connection = wazuh.Wazuh(
             protocol=protocol,
@@ -90,19 +73,16 @@ class WazuhCollector:
         metric = Metric("wazuh_agent_status", "Total Wazuh agents by status", "summary")
 
         # Wazuh >= v4.4
+
         if "connection" in agents["agent_status"]:
             agents_path = agents["agent_status"]["connection"]
         # Legacy Wazuh support (< v4.4)
         else:
             agents_path = agents["agent_status"]
-        
+
+        metric.add_sample("wazuh_active_agents", value=agents_path["active"], labels={})
         metric.add_sample(
-            "wazuh_active_agents",
-            value=agents_path["active"],                
-            labels={}
-        )
-        metric.add_sample(
-           "wazuh_disconnected_agents",
+            "wazuh_disconnected_agents",
             value=agents_path["disconnected"],
             labels={},
         )
@@ -112,15 +92,9 @@ class WazuhCollector:
             labels={},
         )
         metric.add_sample(
-            "wazuh_pending_agents",
-            value=agents_path["pending"],
-            labels={}
+            "wazuh_pending_agents", value=agents_path["pending"], labels={}
         )
-        metric.add_sample(
-            "wazuh_total_agents",
-            value=agents_path["total"],
-            labels={}
-        )
+        metric.add_sample("wazuh_total_agents", value=agents_path["total"], labels={})
         yield metric
         metric = InfoMetricFamily("wazuh_agent_version", "Wazuh agent versions")
         for version in agents["agent_version"]:
@@ -140,7 +114,6 @@ class WazuhCollector:
                     f"last_registered_agent metric has been skipped please check agent."
                     f"Full agent trace {version}"
                 )
-                pass
             else:
                 for key, value in version["os"].items():
                     node_name = version["node_name"]
@@ -171,9 +144,7 @@ class WazuhCollector:
         yield metric
         metric = InfoMetricFamily("nodes_healthcheck", "Wazuh nodes healthcheck")
         nodes = wazuh_connection.wazuh_get_nodes_healtchecks(auth)
-        if nodes is None:
-            pass
-        else:
+        if nodes is not None:
             for node in nodes:
                 for key, value in node["info"].items():
                     metric.add_metric(
@@ -246,11 +217,12 @@ class WazuhCollector:
                 value=remote_state["discarded_count"],
                 labels={"manager_stats_remote": "discarded_count"},
             )
-            metric.add_sample(
-                "queued_msgs",
-                value=remote_state["queued_msgs"],
-                labels={"manager_stats_remote": "queued_msgs"},
-            )
+            if info.get("api_version") < "4.7.0":
+                metric.add_sample(
+                    "queued_msgs",
+                    value=remote_state["queued_msgs"],
+                    labels={"manager_stats_remote": "queued_msgs"},
+                )
             metric.add_sample(
                 "recv_bytes",
                 value=remote_state["recv_bytes"],
@@ -285,20 +257,61 @@ class WazuhCollector:
                 value=analysisd_stat["syscheck_events_decoded"],
                 labels={"analysisd_stats": "syscheck_events_decoded"},
             )
-            metric.add_sample(
-                "analysisd_stats",
-                value=analysisd_stat["syscheck_edps"],
-                labels={"analysisd_stats": "syscheck_edps"},
-            )
+            if info.get("api_version") < "4.7.0":
+                metric.add_sample(
+                    "analysisd_stats",
+                    value=analysisd_stat["syscheck_edps"],
+                    labels={"analysisd_stats": "syscheck_edps"},
+                )
+                metric.add_sample(
+                    "analysisd_stats",
+                    value=analysisd_stat["syscollector_edps"],
+                    labels={"analysisd_stats": "syscollector_edps"},
+                )
+                metric.add_sample(
+                    "analysisd_stats",
+                    value=analysisd_stat["rootcheck_edps"],
+                    labels={"analysisd_stats": "rootcheck_edps"},
+                )
+                metric.add_sample(
+                    "analysisd_stats",
+                    value=analysisd_stat["sca_edps"],
+                    labels={"analysisd_stats": "sca_edps"},
+                )
+                metric.add_sample(
+                    "analysisd_stats",
+                    value=analysisd_stat["hostinfo_events_decoded"],
+                    labels={"analysisd_stats": "hostinfo_events_decoded"},
+                )
+                metric.add_sample(
+                    "analysisd_stats",
+                    value=analysisd_stat["hostinfo_edps"],
+                    labels={"analysisd_stats": "hostinfo_edps"},
+                )
+                metric.add_sample(
+                    "analysisd_stats",
+                    value=analysisd_stat["winevt_edps"],
+                    labels={"analysisd_stats": "winevt_edps"},
+                )
+                metric.add_sample(
+                    "analysisd_stats",
+                    value=analysisd_stat["dbsync_mdps"],
+                    labels={"analysisd_stats": "dbsync_mdps"},
+                )
+                metric.add_sample(
+                    "analysisd_stats",
+                    value=analysisd_stat["other_events_edps"],
+                    labels={"analysisd_stats": "other_events_edps"},
+                )
+                metric.add_sample(
+                    "analysisd_stats",
+                    value=analysisd_stat["events_edps"],
+                    labels={"analysisd_stats": "events_edps"},
+                )
             metric.add_sample(
                 "analysisd_stats",
                 value=analysisd_stat["syscollector_events_decoded"],
                 labels={"analysisd_stats": "syscollector_events_decoded"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
-                value=analysisd_stat["syscollector_edps"],
-                labels={"analysisd_stats": "syscollector_edps"},
             )
             metric.add_sample(
                 "analysisd_stats",
@@ -307,28 +320,8 @@ class WazuhCollector:
             )
             metric.add_sample(
                 "analysisd_stats",
-                value=analysisd_stat["rootcheck_edps"],
-                labels={"analysisd_stats": "rootcheck_edps"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
                 value=analysisd_stat["sca_events_decoded"],
                 labels={"analysisd_stats": "sca_events_decoded"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
-                value=analysisd_stat["sca_edps"],
-                labels={"analysisd_stats": "sca_edps"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
-                value=analysisd_stat["hostinfo_events_decoded"],
-                labels={"analysisd_stats": "hostinfo_events_decoded"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
-                value=analysisd_stat["hostinfo_edps"],
-                labels={"analysisd_stats": "hostinfo_edps"},
             )
             metric.add_sample(
                 "analysisd_stats",
@@ -337,18 +330,8 @@ class WazuhCollector:
             )
             metric.add_sample(
                 "analysisd_stats",
-                value=analysisd_stat["winevt_edps"],
-                labels={"analysisd_stats": "winevt_edps"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
                 value=analysisd_stat["dbsync_messages_dispatched"],
                 labels={"analysisd_stats": "dbsync_messages_dispatched"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
-                value=analysisd_stat["dbsync_mdps"],
-                labels={"analysisd_stats": "dbsync_mdps"},
             )
             metric.add_sample(
                 "analysisd_stats",
@@ -357,18 +340,8 @@ class WazuhCollector:
             )
             metric.add_sample(
                 "analysisd_stats",
-                value=analysisd_stat["other_events_edps"],
-                labels={"analysisd_stats": "other_events_edps"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
                 value=analysisd_stat["events_processed"],
                 labels={"analysisd_stats": "events_processed"},
-            )
-            metric.add_sample(
-                "analysisd_stats",
-                value=analysisd_stat["events_edps"],
-                labels={"analysisd_stats": "events_edps"},
             )
             metric.add_sample(
                 "analysisd_stats",

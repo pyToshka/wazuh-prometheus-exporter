@@ -2,7 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-vault
 config.json
 curator.yml
 data
+tests/single-node/config/wazuh_indexer_ssl_certs/*
