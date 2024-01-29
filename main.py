@@ -44,6 +44,7 @@ class WazuhCollector:
         logger.info("Start collector")
 
     @staticmethod
+    # skipcq: PY-R1000
     def collect():
         wazuh_connection = wazuh.Wazuh(
             protocol=protocol,
