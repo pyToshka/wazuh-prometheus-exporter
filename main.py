@@ -8,6 +8,8 @@ import time
 from prometheus_client import start_http_server, Metric, REGISTRY
 from prometheus_client.metrics_core import InfoMetricFamily, GaugeMetricFamily
 
+from packaging.version import Version
+
 import wazuh
 
 logger = wazuh.get_logger()
@@ -223,7 +225,7 @@ class WazuhCollector:
                 value=remote_state["discarded_count"],
                 labels={"manager_stats_remote": "discarded_count"},
             )
-            if tuple(map(int, (info.get("api_version").split(".")))) < (4,7,0):
+            if Version(info.get("api_version")) < Version("4.7.0"):
                 metric.add_sample(
                     "queued_msgs",
                     value=remote_state["queued_msgs"],
@@ -266,7 +268,7 @@ class WazuhCollector:
                 value=analysisd_stat["syscheck_events_decoded"],
                 labels={"analysisd_stats": "syscheck_events_decoded"},
             )
-            if tuple(map(int, (info.get("api_version").split(".")))) < (4,7,0):
+            if Version(info.get("api_version")) < Version("4.7.0"):
                 metric.add_sample(
                     "analysisd_stats",
                     value=analysisd_stat["syscheck_edps"],
